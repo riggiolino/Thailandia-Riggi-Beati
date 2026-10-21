@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f5f1e8">
+<title>Thailandia — Il viaggio</title>
+<link href="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.css" rel="stylesheet">
+<style>
+:root{--paper:#f5f1e8;--ink:#23332e;--muted:#778078;--green:#526f5b;--coral:#cf7656;--line:#e4dfd4;--white:#fffdf8}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--paper)}
+button{font:inherit;cursor:pointer}button:focus-visible{outline:3px solid #cf7656;outline-offset:3px}
+.topbar{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:1px solid var(--line);background:rgba(255,253,248,.94);position:relative;z-index:5}
+.brand{display:flex;align-items:center;gap:12px}.brandmark{width:36px;height:36px;border-radius:50% 50% 48% 12%;background:var(--green);color:#fff;display:grid;place-items:center;font-size:18px;transform:rotate(-8deg)}.brandname{font-size:15px;font-weight:800;letter-spacing:.08em}.brandmeta{font-size:11px;color:var(--muted);margin-top:3px;letter-spacing:.08em;text-transform:uppercase}
+.topright{display:flex;align-items:center;gap:10px}.tripbadge{font-size:12px;color:var(--green);background:#e8ede5;border-radius:99px;padding:9px 12px;font-weight:700}.topbtn{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:9px 12px;color:var(--ink);font-size:12px}
+.shell{height:calc(100% - 72px);min-height:520px;display:grid;grid-template-columns:245px minmax(300px,1fr) 340px;overflow:hidden}
+.sidebar{background:var(--white);padding:22px 15px;overflow:auto;z-index:2}.left{border-right:1px solid var(--line)}.right{border-left:1px solid var(--line);padding:22px 19px}
+.eyebrow{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:800}.sectiontitle{font-family:Georgia,serif;font-size:22px;font-weight:500;line-height:1.15;margin:10px 0 8px}.intro{font-size:12px;color:var(--muted);line-height:1.5;margin:0 0 19px}
+.stoplist{display:flex;flex-direction:column;gap:5px}.stop{display:grid;grid-template-columns:30px 1fr;gap:9px;align-items:start;text-align:left;border:1px solid transparent;background:transparent;border-radius:12px;padding:10px 8px;color:var(--ink);width:100%;transition:background .2s,border .2s}.stop:hover{background:#f7f5ef}.stop.active{background:#eaf0e8;border-color:#dce6da}.num{height:27px;width:27px;border-radius:50%;display:grid;place-items:center;background:#efede6;color:#68766a;font-size:10px;font-weight:800}.stop.active .num{background:var(--green);color:white}.stopname{font-size:12px;font-weight:750;line-height:1.35}.stopmeta{font-size:10px;color:var(--muted);margin-top:4px;line-height:1.35}.mapwrap{position:relative;min-width:0;min-height:0;background:#e3e8df;overflow:hidden}#map{position:absolute;inset:0}.mapshade{position:absolute;z-index:2;top:17px;left:17px;right:17px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;pointer-events:none}.maplabel{padding:11px 14px;background:rgba(255,253,248,.92);border:1px solid rgba(255,255,255,.7);border-radius:12px;box-shadow:0 8px 28px #26342d12;backdrop-filter:blur(8px)}.maplabel strong{display:block;font-family:Georgia,serif;font-size:16px;font-weight:500}.maplabel span{display:block;font-size:10px;color:var(--muted);margin-top:4px}.mapcontrols{display:flex;gap:7px;pointer-events:auto}.mapcontrols button{border:1px solid #ffffffaa;background:#fffdf0e8;color:var(--ink);border-radius:10px;padding:10px 11px;font-size:11px;box-shadow:0 5px 18px #26342d12}.mapfoot{position:absolute;z-index:2;bottom:14px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:end;gap:12px;pointer-events:none}.hint{font-size:10px;color:#435148;background:#fffdf0e8;border-radius:9px;padding:9px 11px;max-width:300px;line-height:1.4}.scale{font-size:9px;color:#46574b;background:#fffdf0e8;border-radius:9px;padding:8px 10px}
+.marker{width:32px;height:32px;border-radius:50% 50% 50% 8px;transform:rotate(-45deg);background:#fffdf8;border:2px solid var(--green);box-shadow:0 4px 12px #21362d35;display:grid;place-items:center;transition:transform .2s,background .2s;border-color:var(--green)}.marker span{transform:rotate(45deg);font-size:11px;font-weight:900;color:var(--green)}.marker.selected{background:var(--coral);border-color:#fffdf8;transform:rotate(-45deg) scale(1.22)}.marker.selected span{color:white}
+.righttop{display:flex;justify-content:space-between;align-items:center}.counter{font-size:10px;color:var(--muted);font-weight:800;letter-spacing:.08em}.hero{width:100%;height:190px;object-fit:cover;border-radius:14px;display:block;background:#e3dfd4;margin:17px 0 16px}.place-title{font-family:Georgia,serif;font-weight:500;font-size:29px;line-height:1.08;letter-spacing:-.025em;margin:0 0 9px}.place-desc{font-size:13px;line-height:1.65;color:#667068;margin:0 0 18px}.tagrow{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 20px}.tag{border:1px solid var(--line);border-radius:99px;padding:6px 9px;font-size:10px;color:#5f6e61;background:#faf8f2}.subhead{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:800;margin-bottom:8px}.activity{display:flex;gap:9px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #eeebe3;font-size:12px;line-height:1.45}.activity i{font-style:normal;color:var(--coral);font-size:14px}.note{margin-top:15px;padding:11px 12px;background:#f3f0e7;border-radius:10px;color:#70776f;font-size:10px;line-height:1.5}.navbuttons{display:flex;gap:8px;margin-top:18px}.navbuttons button{flex:1;border:1px solid var(--line);background:var(--white);border-radius:10px;padding:11px 8px;font-size:11px;color:var(--ink)}.navbuttons button.primary{background:var(--green);border-color:var(--green);color:white}.footerline{font-size:9px;color:#9a9e95;line-height:1.4;margin-top:15px}
+@media(max-width:1050px){.shell{grid-template-columns:205px minmax(250px,1fr) 300px}.sidebar{padding:18px 11px}.right{padding:18px 15px}.hero{height:165px}.place-title{font-size:26px}}
+@media(max-width:760px){.topbar{height:62px;padding:0 13px}.brandmeta{display:none}.brandname{font-size:12px}.tripbadge{display:none}.shell{height:calc(100% - 62px);min-height:0;display:flex;flex-direction:column;overflow:auto}.mapwrap{order:1;flex:none;height:48vh;min-height:330px}.left{order:2;flex:none;border-right:0;border-bottom:1px solid var(--line);padding:15px 12px}.left .sectiontitle{font-size:18px;margin:5px 0}.left .intro{margin-bottom:10px}.stoplist{flex-direction:row;overflow-x:auto;padding-bottom:4px}.stop{min-width:150px;max-width:180px}.right{order:3;flex:none;border-left:0;padding:18px 16px}.hero{height:230px}.mapshade{top:10px;left:10px;right:10px}.maplabel{padding:9px 11px}.maplabel strong{font-size:14px}.mapcontrols button{padding:9px}.mapfoot{bottom:9px;left:9px;right:9px}.hint{max-width:230px}.footerline{padding-bottom:8px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="brandmark">✦</div><div><div class="brandname">THAILANDIA, DA VICINO</div><div class="brandmeta">Un viaggio tra templi, città e mare</div></div></div>
+  <div class="topright"><div class="tripbadge">14 giorni · 31 maggio — 13 giugno 2027</div><button class="topbtn" id="resetTop">Vista d'insieme ↗</button></div>
+</header>
+<main class="shell">
+  <aside class="sidebar left">
+    <div class="eyebrow">L'itinerario</div><h1 class="sectiontitle">Tappe del viaggio</h1>
+    <p class="intro">Seleziona una tappa per sorvolare la mappa e scoprire cosa ti aspetta.</p>
+    <div id="stoplist" class="stoplist"></div>
+  </aside>
+  <section class="mapwrap" aria-label="Mappa tridimensionale stilizzata del viaggio">
+    <div id="map"></div>
+    <div class="mapshade">
+      <div class="maplabel"><strong id="mapPlace">Thailandia</strong><span id="mapMeta">Vista illustrata · esplora il percorso</span></div>
+      <div class="mapcontrols"><button id="tilt">Vista inclinata 3D ✓</button><button id="overview">Tutto il percorso</button></div>
+    </div>
+    <div class="mapfoot"><div class="hint">Suggerimento: scegli una tappa a sinistra oppure tocca un segnaposto sulla mappa.</div><div class="scale">MAPPA STILIZZATA · 3D</div></div>
+  </section>
+  <aside class="sidebar right">
+    <div class="righttop"><div class="eyebrow">Diario di viaggio</div><div class="counter" id="counter">01 / 10</div></div>
+    <img id="hero" class="hero" alt="Fotografia della destinazione">
+    <div class="eyebrow" id="day">GIORNO 1</div><h2 id="title" class="place-title">Bangkok</h2>
+    <p id="description" class="place-desc"></p>
+    <div id="tags" class="tagrow"></div>
+    <div class="subhead">Da non perdere</div><div id="activities"></div>
+    <div id="note" class="note"></div>
+    <div class="navbuttons"><button id="prev">← Precedente</button><button class="primary" id="next">Prossima tappa →</button></div>
+    <div class="footerline">Itinerario ricostruito dal preventivo Gerundo Tour. Date e dettagli operativi da confermare con l'agenzia prima della partenza.</div>
+  </aside>
+</main>
+<script src="https://unpkg.com/maplibre-gl@5.6.1/dist/maplibre-gl.js"></script>
+<script>
+const trip = {
+  stops: [
+    {name:"Bangkok",day:"1–2 giugno · Giorni 1–2",coords:[100.5018,13.7563],photo:"https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&w=1000&q=85",alt:"Panorama di Bangkok",desc:"La porta d'ingresso alla Thailandia: canali, templi dorati e una città piena di energia. Il programma prevede una prima esplorazione lungo il Chao Phraya e alcuni dei templi più importanti della capitale.",tags:["Templi","Fiume Chao Phraya"],activities:["Palazzo Reale e Wat Phra Kaew","Wat Pho e il Buddha sdraiato","Wat Arun, il Tempio dell'Aurora","Navigazione con le barche pubbliche"],note:"Il 1° giugno è previsto l'arrivo a Bangkok dopo il volo intercontinentale. Le visite sono indicate nel programma dal giorno successivo."},
+    {name:"Damnoen Saduak",day:"3 giugno · Giorno 3",coords:[99.9567,13.5182],photo:"https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=1000&q=85",alt:"Canali e mercati galleggianti thailandesi",desc:"Un'escursione fuori città per visitare il celebre mercato galleggiante, tra canali, bancarelle e piccole imbarcazioni cariche di prodotti locali.",tags:["Mercato galleggiante","Escursione"],activities:["Visita al mercato di Damnoen Saduak","Sosta al mercato ferroviario di Mae Klong","Rientro a Bangkok e passeggiata a Chinatown"],note:"Il programma indica colazione e pranzo inclusi in questa giornata. Il mercato di Mae Klong è noto per le bancarelle disposte lungo i binari."},
+    {name:"Ayutthaya",day:"4 giugno · Giorno 4",coords:[100.5684,14.3532],photo:"https://images.unsplash.com/photo-1598970605070-a38a6ccd3a2d?auto=format&fit=crop&w=1000&q=85",alt:"Rovine dei templi storici di Ayutthaya",desc:"Antica capitale del Siam, Ayutthaya custodisce rovine monumentali, torri in mattoni e templi che raccontano la storia del regno.",tags:["Patrimonio storico","Archeologia"],activities:["Parco archeologico di Ayutthaya","Wat Mahathat","Wat Na Phra Meru","Proseguimento verso Phitsanulok e Sukhothai"],note:"Giornata di trasferimento verso nord. L'ordine delle visite segue la proposta dell'agenzia."},
+    {name:"Phitsanulok",day:"4 giugno · Giorno 4",coords:[100.2586,16.8211],photo:"https://images.unsplash.com/photo-1540611025311-01df3cef54b5?auto=format&fit=crop&w=1000&q=85",alt:"Tempio buddhista in Thailandia",desc:"Una tappa culturale nel nord della Thailandia, con visita al Wat Phra Si Rattana Mahathat, luogo di culto noto per una delle immagini del Buddha più venerate del paese.",tags:["Tempio","Cultura"],activities:["Visita al Wat Phra Si Rattana Mahathat","Trasferimento verso Sukhothai"],note:"Arrivo a Sukhothai previsto nel tardo pomeriggio, secondo il programma."},
+    {name:"Sukhothai",day:"4–5 giugno · Giorni 4–5",coords:[99.7031,17.0078],photo:"https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=1000&q=85",alt:"Rovine e statue del parco storico di Sukhothai",desc:"Un paesaggio di antiche rovine, stagni e statue buddhiste nel cuore di uno dei siti storici più evocativi della Thailandia.",tags:["Parco storico","UNESCO"],activities:["Parco storico di Sukhothai","Wat Si Sawai, Wat Mahathat e Wat Sa Si","Visita al complesso di Si Satchanalai","Incontro con un villaggio di etnia Karen"],note:"Il programma prevede colazione e pranzo il giorno della visita e una sosta al villaggio durante il trasferimento verso Chiang Mai."},
+    {name:"Chiang Mai",day:"5–7 giugno · Giorni 5–7",coords:[98.9853,18.7883],photo:"https://images.unsplash.com/photo-1512553353614-82a7370096dc?auto=format&fit=crop&w=1000&q=85",alt:"Tempio e paesaggio nel nord della Thailandia",desc:"Una base ideale per scoprire templi, mercati e paesaggi montani. Il programma alterna patrimonio culturale, artigianato e scorci panoramici.",tags:["Templi","Mercati locali","Montagne"],activities:["Mercato locale di Kad Baan Ta Doi Kaew","Wat Suan Dok e Wat Phra That Doi Suthep","Piantagione di orchidee","Wat Chedi Luang e Wat Phra Singh"],note:"Il programma menziona anche un villaggio dell'etnia Padong. Per visite a comunità locali, attenersi alle indicazioni della guida e rispettare le persone fotografate."},
+    {name:"Chiang Rai",day:"7 giugno · Giorno 7",coords:[99.8325,19.9105],photo:"https://images.unsplash.com/photo-1504457047772-27faf1c00561?auto=format&fit=crop&w=1000&q=85",alt:"Architettura di un tempio thailandese",desc:"Una giornata nel nord più remoto, tra architetture religiose contemporanee, storia di confine e paesaggi del Mekong.",tags:["Templi","Triangolo d'Oro"],activities:["Wat Rong Suea Ten, il Tempio Blu","Triangolo d'Oro","Museo dell'Oppio","Wat Rong Khun, il Tempio Bianco"],note:"Escursione in giornata con rientro a Chiang Mai. Pranzo previsto in ristorante locale secondo il programma."},
+    {name:"Koh Samui",day:"8–12 giugno · Giorni 8–13",coords:[100.0136,9.5120],photo:"https://images.unsplash.com/photo-1537953773345-d172ccf13cf1?auto=format&fit=crop&w=1000&q=85",alt:"Spiaggia tropicale con palme a Koh Samui",desc:"La parte più rilassata del viaggio: spiagge tropicali, palme e tempo libero per godersi il mare o scegliere escursioni facoltative.",tags:["Mare","Relax","Hotel"],activities:["Trasferimento in aeroporto e volo per Koh Samui","Soggiorno al Chaweng Regent Beach Resort","Giornate libere in spiaggia","Possibili escursioni facoltative"],note:"Nel preventivo è indicata una camera Deluxe Villa con trattamento di prima colazione. Verificare direttamente con l'agenzia la conferma della struttura e del trattamento."},
+    {name:"Rientro in Italia",day:"12–13 giugno · Giorni 13–14",coords:[100.0136,9.5120],photo:"https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1000&q=85",alt:"Mare tropicale prima del viaggio di rientro",desc:"Ultima colazione e trasferimento in tempo utile per il volo di ritorno. Il viaggio si conclude dopo lo scalo a Doha e il rientro a Milano Malpensa.",tags:["Volo di rientro","Doha"],activities:["Colazione in hotel","Trasferimento all'aeroporto di Koh Samui","Volo via Doha verso Milano Malpensa"],note:"Gli orari riportati nel preventivo indicano il rientro a Malpensa il 13 giugno. Controllare sempre i biglietti aerei aggiornati."}
+  ]
+};
+const list=document.getElementById('stoplist');
+const mapLabel=document.getElementById('mapPlace');
+const mapMeta=document.getElementById('mapMeta');
+let selected=0, tilted=true, map, markers=[];
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+trip.stops.forEach((s,i)=>{
+ const b=document.createElement('button'); b.className='stop'; b.type='button';
+ b.innerHTML=`<span class="num">${String(i+1).padStart(2,'0')}</span><span><span class="stopname">${esc(s.name)}</span><span class="stopmeta">${esc(s.day)}</span></span>`;
+ b.addEventListener('click',()=>selectStop(i)); list.appendChild(b);
+});
+function drawDetails(i){
+ const s=trip.stops[i]; selected=i;
+ document.querySelectorAll('.stop').forEach((b,j)=>{b.classList.toggle('active',i===j);b.setAttribute('aria-current',i===j?'step':'false')});
+ document.getElementById('counter').textContent=`${String(i+1).padStart(2,'0')} / ${String(trip.stops.length).padStart(2,'0')}`;
+ document.getElementById('day').textContent=s.day;
+ document.getElementById('title').textContent=s.name;
+ document.getElementById('description').textContent=s.desc;
+ const img=document.getElementById('hero'); img.src=s.photo; img.alt=s.alt; img.onerror=()=>{img.onerror=null;img.src='https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=1000&q=80';};
+ document.getElementById('tags').innerHTML=s.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('');
+ document.getElementById('activities').innerHTML=s.activities.map(a=>`<div class="activity"><i>✳</i><span>${esc(a)}</span></div>`).join('');
+ document.getElementById('note').textContent=s.note;
+ mapLabel.textContent=s.name; mapMeta.textContent=s.day;
+}
+function selectStop(i){
+ selected=(i+trip.stops.length)%trip.stops.length; drawDetails(selected);
+ if(map){const s=trip.stops[selected];map.flyTo({center:s.coords,zoom:selected===7||selected===8?6.2:7.2,pitch:tilted?58:0,bearing:tilted?-18:0,duration:1800,essential:true});}
+ markers.forEach((m,j)=>{m.getElement().querySelector('.marker').classList.toggle('selected',j===selected)});
+}
+function showOverview(){
+ if(!map)return;
+ const coords=trip.stops.map(s=>s.coords);
+ const bounds=coords.reduce((b,c)=>b.extend(c),new maplibregl.LngLatBounds(coords[0],coords[0]));
+ map.fitBounds(bounds,{padding:{top:90,bottom:80,left:55,right:55},duration:1500,maxZoom:5.2,pitch:tilted?48:0,bearing:tilted?-12:0});
+ mapLabel.textContent='Thailandia';mapMeta.textContent='Vista d’insieme · tutte le tappe';
+}
+document.getElementById('prev').onclick=()=>selectStop(selected-1);
+document.getElementById('next').onclick=()=>selectStop(selected+1);
+document.getElementById('overview').onclick=showOverview;
+document.getElementById('resetTop').onclick=showOverview;
+document.getElementById('tilt').onclick=()=>{
+ tilted=!tilted;document.getElementById('tilt').textContent=tilted?'Vista inclinata 3D ✓':'Vista dall’alto 2D';
+ if(map)map.easeTo({pitch:tilted?58:0,bearing:tilted?-18:0,duration:900});
+};
+if(!window.maplibregl){
+ document.getElementById('map').innerHTML='<div style="padding:24px;color:#26342e">Impossibile caricare la mappa: verifica la connessione Internet e ricarica la pagina.</div>';
+}else{
+ map=new maplibregl.Map({
+  container:'map',
+  style:'https://tiles.openfreemap.org/styles/positron',
+  center:[100.4,15.2],zoom:4.7,pitch:48,bearing:-12,
+  antialias:true,attributionControl:true
+ });
+ map.addControl(new maplibregl.NavigationControl({showCompass:true}),'bottom-right');
+ map.on('load',()=>{
+  const routeCoords=trip.stops.map(s=>s.coords);
+  map.addSource('journey-route',{type:'geojson',data:{type:'Feature',geometry:{type:'LineString',coordinates:routeCoords}}});
+  map.addLayer({id:'route-shadow',type:'line',source:'journey-route',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#f5f1e8','line-width':7,'line-opacity':.95}});
+  map.addLayer({id:'route-line',type:'line',source:'journey-route',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#c87555','line-width':3,'line-dasharray':[2,1.5]}});
+  trip.stops.forEach((s,i)=>{
+   const el=document.createElement('div');el.innerHTML=`<div class="marker ${i===0?'selected':''}"><span>${i+1}</span></div>`;
+   el.style.cursor='pointer';
+   const marker=new maplibregl.Marker({element:el,anchor:'bottom'}).setLngLat(s.coords).addTo(map);
+   el.addEventListener('click',()=>selectStop(i)); markers.push(marker);
+  });
+  selectStop(0);
+ });
+ map.on('error',e=>console.warn('Errore mappa',e.error||e));
+}
+drawDetails(0);
+</script>
+</body>
+</html>
